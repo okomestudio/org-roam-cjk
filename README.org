@@ -1,0 +1,21 @@
+#+title: org-roam-cjk
+
+To enhance the unlinked references section in the Org Roam buffer, add ~org-roam-ja-unlinked-refrences-section~ to the custom variable ~org-roam-mode-sections~.
+
+#+begin_src elisp
+  (use-package org-roam
+    :config
+    (require 'org-roam-cjk-ja))
+
+  (use-package org-roam-cjk
+    :straight (org-roam-cjk :host github
+                            :repo "okomestudio/org-roam-cjk"
+                            :files (:defaults "extensions/*"))
+    :custom ((org-roam-mode-sections
+              (list #'org-roam-backlinks-section
+                    #'org-roam-reflinks-section
+                    #'org-roam-cjk-unlinked-references-section)))
+    :config
+    (require 'adaptive-wrap)    ; optional
+    )
+#+end_src

@@ -4,49 +4,50 @@
 ;;
 ;; Author: Taro Sato <okomestudio@gmail.com>
 ;; URL: https://github.com/okomestudio/org-roam-cjk
-;; Version: 0.1.1
+;; Version: 0.1.2
 ;; Keywords: org-mode, org-roam, plug-in
 ;; Package-Requires: ((emacs "30.1") (org "9.7") (org-roam "2.3.0") (magit-section "3.0.0"))
 ;;
 ;;; License:
 ;;
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
+;; This program is free software; you can redistribute it and/or modify it under
+;; the terms of the GNU General Public License as published by the Free Software
+;; Foundation, either version 3 of the License, or (at your option) any later
+;; version.
 ;;
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
+;; This program is distributed in the hope that it will be useful, but WITHOUT
+;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+;; FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+;; details.
 ;;
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+;; You should have received a copy of the GNU General Public License along with
+;; this program. If not, see <https://www.gnu.org/licenses/>.
 ;;
 ;;; Commentary:
 ;;
-;; This library provides a version of
-;; `org-roam-unlinked-references-section' for `org-roam' notes written
-;; in a CJK (Chinese, Japanese, Korean) language.
+;; This library provides a version of `org-roam-unlinked-references-section' for
+;; `org-roam' notes written in a CJK (Chinese, Japanese, Korean) language.
 ;;
 ;;; Code:
 
 (require 'magit-section)
 (require 'org-roam)
 
+;;; Unlinked References Section
+
 (defcustom org-roam-cjk-unlinked-references-word-boundary-re "|(\\b%1$s\\b)"
   "The word bounday regex used by ripgrep for unlinked references.
-Regex's word boundary (\b) does not correctly determine how words and
-phrases should be tokenized in a CJK language. This custom variable
-allows customization."
+Regex's word boundary (\b) does not correctly determine how words and phrases
+should be tokenized in a CJK language. This custom variable allows
+customization."
   :group 'org-roam
   :type 'string)
 
 (defcustom org-roam-cjk-unlinked-references-max-results-count 1000
   "The max number of items in the unlinked references section.
-Rendering of the unlinked references section can appear to freeze when
-the match count is very large. This number limits the maximum number of
-matched unlinked references to show to prevent the issue."
+Rendering of the unlinked references section can appear to freeze when the match
+count is very large. This number limits the maximum number of matched unlinked
+references to show to prevent the issue."
   :group 'org-roam
   :type 'integer)
 
@@ -60,9 +61,9 @@ matched unlinked references to show to prevent the issue."
 (defun org-roam-cjk-unlinked-references--result-filter-p
     (matched-text matched-file row col titles node)
   "Filter if the match is considered an unlinked reference.
-Return non-nil if MATCHED-TEXT at ROW and COL in MATCHED-FILE is an
-unlinked reference, or return nil. TITLES and NODE are supplied for use
-in the conditional expression."
+Return non-nil if MATCHED-TEXT at ROW and COL in MATCHED-FILE is an unlinked
+reference, or return nil. TITLES and NODE are supplied for use in the
+conditional expression."
   (let ((linked-re (format "\\[\\[id:%s\\]\\[.*\\]\\]" (org-roam-node-id node))))
     (if (not (file-equal-p (org-roam-node-file node) matched-file))
         ;; The matched text is in a different file from the current node.
@@ -85,9 +86,8 @@ in the conditional expression."
 (defun org-roam-cjk-unlinked-references--preview-line
     (file row col file-prev row-prev col-prev)
   "Return the preview line from FILE.
-The line was matched with text at ROW and COL. FILE-PREV, ROW-PREV, and
-COL-PREV points to the previous line and can be used to control
-rendering."
+The line was matched with text at ROW and COL. FILE-PREV, ROW-PREV, and COL-PREV
+points to the previous line and can be used to control rendering."
   (if (and (string= file file-prev) (= row row-prev))
       ;; Use a "ditto" mark if the current line is
       ;; similar to the previous line.

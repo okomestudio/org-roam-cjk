@@ -235,7 +235,7 @@ in the fie at row and column should be filtered in."
   "Name of the `org-roam' buffer for keyword search.")
 
 (defun org-roam-cjk-keyword-search-buffer (term)
-  "TBD."
+  "Open an `org-roam' buffer for riggrep search on TERM."
   (interactive (list (read-string "Term to search: ")))
   (let ((node (org-roam-node-at-point))
         (buffer (generate-new-buffer

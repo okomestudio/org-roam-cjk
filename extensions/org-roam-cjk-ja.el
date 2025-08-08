@@ -4,24 +4,24 @@
 ;;
 ;; Author: Taro Sato <okomestudio@gmail.com>
 ;; URL: https://github.com/okomestudio/org-roam-cjk
-;; Version: 0.2.2
+;; Version: 0.2.3
 ;; Keywords: org-mode, org-roam, plug-in
 ;; Package-Requires: ((emacs "30.1") (org "9.7") (org-roam "2.3.0") (s "1.13.1"))
 ;;
 ;;; License:
 ;;
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
+;; This program is free software; you can redistribute it and/or modify it under
+;; the terms of the GNU General Public License as published by the Free Software
+;; Foundation, either version 3 of the License, or (at your option) any later
+;; version.
 ;;
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
+;; This program is distributed in the hope that it will be useful, but WITHOUT
+;; ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+;; FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+;; details.
 ;;
-;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+;; You should have received a copy of the GNU General Public License along with
+;; this program. If not, see <https://www.gnu.org/licenses/>.
 ;;
 ;;; Commentary:
 ;;
@@ -68,14 +68,13 @@ element) of a target term.")
   "Miscellaneous terms that can come before a target term (proper noun).")
 
 (setopt
- org-roam-cjk-unlinked-references-word-boundary-re
+ org-roam-cjk-rg-word-boundary-re
  (let* (;; Strict version:
         ;;
-        ;; Unlike English, Japanese words are not delimited by
-        ;; character word boundary. In this stricter version, we use
-        ;; "joshi" particles (助詞) as boundary indicator. This
-        ;; implicitly assumes titles (words to be delimited by the
-        ;; word boundary) to be "meishi" (名詞/noun).
+        ;; Unlike English, Japanese words are not delimited by character word
+        ;; boundary. In this stricter version, we use "joshi" particles (助詞)
+        ;; as boundary indicator. This implicitly assumes titles (words to be
+        ;; delimited by the word boundary) to be "meishi" (名詞/noun).
         (l (append (cadr org-roam-cjk-ja-joshi)
                    (car org-roam-cjk-ja-joshi)
                    org-roam-cjk-ja-misc
@@ -95,8 +94,7 @@ element) of a target term.")
                  (s-join "|" (mapcar (lambda (it) (regexp-quote it)) r))
                  "))"))
 
-        ;; Lenient version (Use any Japanese characters as word
-        ;; boundary):
+        ;; Lenient version (Use any Japanese characters as word boundary):
         (word-boundary-re-lenient
          (concat "|(\\b%1$s\\b"
                  "|(\\b%1$s\\b"

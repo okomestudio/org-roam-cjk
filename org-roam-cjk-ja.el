@@ -1,10 +1,10 @@
-;;; org-roam-cjk.el --- Org Roam Japanese Extensions  -*- lexical-binding: t -*-
+;;; org-roam-cjk-ja.el --- Japanese customization  -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2025 Taro Sato
 ;;
 ;; Author: Taro Sato <okomestudio@gmail.com>
 ;; URL: https://github.com/okomestudio/org-roam-cjk
-;; Version: 0.2.3
+;; Version: 0.3.1
 ;; Keywords: org-mode, org-roam, plug-in
 ;; Package-Requires: ((emacs "30.1") (org "9.7") (org-roam "2.3.0") (s "1.13.1"))
 ;;
@@ -34,10 +34,10 @@
 
 (defcustom org-roam-cjk-ja-zenkaku-parens '("（「『【［〈《〔｛"
                                             "）」』】］〉》〕｝")
-  "Zenkaku parentheses, left-side and right-side.")
+  "Zenkaku (全角) parentheses, left-side and right-side.")
 
 (defcustom org-roam-cjk-ja-zenkaku-puncts "。、，・／；："
-  "Zenkaku punctuations.")
+  "Zenkaku (全角) punctuations.")
 
 (defcustom org-roam-cjk-ja-joshi
   '(("かい" "かり" "けど" "けれど" "けれども"
@@ -60,7 +60,8 @@ Each can come on the left side (first element) or the right side (second
 element) of a target term.")
 
 (defcustom org-roam-cjk-ja-misc
-  '("スト"                    ; （ピアニ）スト山田花子
+  '(
+    "スト"                    ; （ピアニ）スト山田花子
     "ター"                    ; （イラストレー）ター山田花子
     "家"                      ; （漫画）家山田花子
     "者"                      ; （哲学）者ソクラテス

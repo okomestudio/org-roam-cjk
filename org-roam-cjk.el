@@ -4,7 +4,7 @@
 ;;
 ;; Author: Taro Sato <okomestudio@gmail.com>
 ;; URL: https://github.com/okomestudio/org-roam-cjk
-;; Version: 0.2.1
+;; Version: 0.3.1
 ;; Keywords: org-mode, org-roam, plug-in
 ;; Package-Requires: ((emacs "30.1") (org "9.7") (org-roam "2.3.0") (magit-section "3.0.0"))
 ;;

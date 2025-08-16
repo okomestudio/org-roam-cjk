@@ -1,40 +1,31 @@
 #+title: org-roam-cjk
 
-To enhance the unlinked references section in the Org Roam buffer, add ~org-roam-ja-unlinked-refrences-section~ to the custom variable ~org-roam-mode-sections~.
+The org-roam-cjk package provides enhancements to [[https://github.com/org-roam/org-roam][org-roam]] with CJK (Chinese, Japanese, and Korean) languages.
+
+Currently, only the Japanese plugin exists. The package implements the unlinked references section for the org-roam buffer. The unlinked references section uses ripgrep to parse all org-roam documents for a term. The default version included in org-roam assumes the regexp word boundary of “\b”, making the query insensitive to texts written in languages that do not rely on word boundary characters for word tokens.
 
 * Installation
-** With use-package
 
 #+begin_src elisp
-  (use-package org-roam)
-  (use-package magit-section)
   (use-package org-roam-cjk
     :vc (:url "https://github.com/okomestudio/org-roam-cjk.git")
-    :init
-    (add-to-list 'load-path
-                 (expand-file-name "org-roam-cjk/extensions" package-user-dir))
-    (require 'org-roam-cjk-ja))
-#+end_src
-
-** With straight.el
-
-#+begin_src elisp
-  (use-package org-roam)
-  (use-package magit-section)
-  (use-package org-roam-cjk
-    :straight (org-roam-cjk :type git
-                            :host github
-                            :repo "okomestudio/org-roam-cjk"
-                            :files (:defaults "extensions/*"))
     :custom ((org-roam-mode-sections
               (list #'org-roam-backlinks-section
                     #'org-roam-reflinks-section
                     #'org-roam-cjk-unlinked-references-section)))
-    :init
-    (require 'adaptive-wrap)    ; optional
-    (require 'org-roam-cjk-ja))
+    :hook (org-roam . (lambda ()
+                        (require 'adaptive-wrap) ; optional
+                        (require 'org-roam-cjk-ja))))
 #+end_src
 
-* Usage
+Or, with straight.el, replace ~:vc~ with the following:
 
-- Describe ~org-roam-cjk-keyword-search-buffer~
+#+begin_src elisp
+    :straight (org-roam-cjk :type git
+                            :host github
+                            :repo "okomestudio/org-roam-cjk")
+#+end_src
+
+* TODOs
+
+- [ ] Describe ~org-roam-cjk-keyword-search-buffer~

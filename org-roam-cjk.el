@@ -1,4 +1,4 @@
-;;; org-roam-cjk.el --- Org Roam CJK Extensions  -*- lexical-binding: t -*-
+;;; org-roam-cjk.el --- Org Roam CJK Extension  -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2025 Taro Sato
 ;;
@@ -34,12 +34,31 @@
 (require 'org-roam)
 
 (defcustom org-roam-cjk-rg-word-boundary-re "|(\\b%1$s\\b)"
-  "The word bounday regex used by ripgrep for unlinked references.
-Regex's word boundary (\b) does not correctly determine how words and phrases
-should be tokenized in a CJK language. This custom variable allows
+  "The word bounday regex used by ripgrep for an unlinked term.
+The regexp word boundary (i.e., '\b') does not correctly determine how words and
+phrases should be tokenized in a CJK language. This custom variable allows
 customization."
   :group 'org-roam
-  :type 'string)
+  :type '(choice string (repeat (cons symbol string))))
+
+(defun org-roam-cjk-rg-word-boundary-re-switch (key)
+  "Switch word boundary regexp to KEY if multiple options exist."
+  (interactive
+   (list (when (and (listp org-roam-cjk-rg-word-boundary-re)
+                    (> (length org-roam-cjk-rg-word-boundary-re) 1))
+           (completing-read "Use word boundary regexp: "
+                            (mapcar (lambda (it) (symbol-name (car it)))
+                                    org-roam-cjk-rg-word-boundary-re)
+                            nil t))))
+  (when-let* ((key (when key (intern key))))
+    (setopt org-roam-cjk-rg-word-boundary-re
+            (if-let* ((item (assoc key org-roam-cjk-rg-word-boundary-re)))
+                (cons item
+                      (assq-delete-all key org-roam-cjk-rg-word-boundary-re))
+              org-roam-cjk-rg-word-boundary-re))))
+
+(define-key org-roam-mode-map (kbd "S")
+            #'org-roam-cjk-rg-word-boundary-re-switch)
 
 (defcustom org-roam-cjk-rg-max-results-count 1000
   "The max number of items in the ripgrep results section.
@@ -135,8 +154,10 @@ The output expression should be sanitized for the shell use."
          (s (replace-regexp-in-string " [\"\“]\\(\\w\\)" " [\"\“]\\1" s))
          (s (replace-regexp-in-string "\\(\\w\\)[\"\”]" "\\1[\"\”]" s))
 
-         (s (format org-roam-cjk-rg-word-boundary-re
-                    (org-roam-cjk-rg--sanitize-title title)))
+         (word-boundary-re (if (stringp org-roam-cjk-rg-word-boundary-re)
+                               org-roam-cjk-rg-word-boundary-re
+                             (cdar org-roam-cjk-rg-word-boundary-re)))
+         (s (format word-boundary-re (org-roam-cjk-rg--sanitize-title title)))
 
          ;; Some special chars needs unescaping after `shell-quotes':
          (s (replace-regexp-in-string "[\\][[]\\([^][]+\\)[\\][]]" "[\\1]" s)))
@@ -232,21 +253,42 @@ in the fie at row and column should be filtered in."
 ;;; Keyword Search Buffer
 
 (defvar org-roam-cjk-keyword-search-buffer "*org-roam-keyword-search*"
-  "Name of the `org-roam' buffer for keyword search.")
+  "Name of keyword search buffer.")
+
+(defun org-roam-cjk-keyword-search-buffer--render (term)
+  "Render the keyword search buffer for TERM."
+  (let ((inhibit-read-only t))
+    (org-roam-mode)
+    (org-roam-buffer-set-header-line-format term)
+    (magit-insert-section (org-roam)
+      (magit-insert-heading)
+      (org-roam-cjk-rg-section (list term))
+      (setq-local org-roam-cjk-keyword-search-buffer-term term)
+      (goto-char 0))))
 
 (defun org-roam-cjk-keyword-search-buffer (term)
-  "Open an `org-roam' buffer for riggrep search on TERM."
+  "Open the keyword search buffer for TERM."
   (interactive (list (read-string "Term to search: ")))
-  (let ((node (org-roam-node-at-point))
-        (buffer (generate-new-buffer
-                 (format "%s<%s>" org-roam-cjk-keyword-search-buffer
-                         term))))
+  (let ((buffer (generate-new-buffer
+                 (format "%s<%s>" org-roam-cjk-keyword-search-buffer term))))
     (switch-to-buffer buffer)
-    (org-mode)
-    (org-roam-mode)
-    (let ((inhibit-read-only t))
-      (org-roam-cjk-rg-section (list term)
-                               (format "Ripgrep Matches (%s)" term)))))
+    (org-roam-cjk-keyword-search-buffer--render term)))
+
+(defun org-roam-cjk-keyword-search-buffer-refresh ()
+  "Refresh the keyword search buffer."
+  (interactive)
+  (let ((inhibit-read-only t)
+        (term org-roam-cjk-keyword-search-buffer-term))
+    (erase-buffer)
+    (org-roam-cjk-keyword-search-buffer--render term)))
+
+(defun org-roam-buffer-refresh--ad (fun)
+  "Advise FUN (`org-roam-buffer-refresh') for keyword search buffer support."
+  (if (string-prefix-p org-roam-cjk-keyword-search-buffer (buffer-name))
+      (org-roam-cjk-keyword-search-buffer-refresh)
+    (call-interactively fun)))
+
+(advice-add #'org-roam-buffer-refresh :around #'org-roam-buffer-refresh--ad)
 
 ;;; Visual Customization
 

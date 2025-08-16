@@ -2,12 +2,6 @@
 ;;
 ;; Copyright (C) 2025 Taro Sato
 ;;
-;; Author: Taro Sato <okomestudio@gmail.com>
-;; URL: https://github.com/okomestudio/org-roam-cjk
-;; Version: 0.3.1
-;; Keywords: org-mode, org-roam, plug-in
-;; Package-Requires: ((emacs "30.1") (org "9.7") (org-roam "2.3.0") (s "1.13.1"))
-;;
 ;;; License:
 ;;
 ;; This program is free software; you can redistribute it and/or modify it under
@@ -25,12 +19,11 @@
 ;;
 ;;; Commentary:
 ;;
-;; This library provides the Japanese extension using `org-roam-cjk'.
+;; This library provides the Japanese customization of `org-roam'.
 ;;
 ;;; Code:
 
 (require 'org-roam-cjk)
-(require 's)
 
 (defcustom org-roam-cjk-ja-zenkaku-parens '("（「『【［〈《〔｛"
                                             "）」』】］〉》〕｝")
@@ -90,9 +83,9 @@ element) of a target term.")
         (word-boundary-re-strict
          (concat "|(\\b%1$s\\b"
                  "|(?<="
-                 (s-join "|" (mapcar (lambda (it) (regexp-quote it)) l))
+                 (mapconcat (lambda (it) (regexp-quote it)) l "|")
                  ")%1$s(?="
-                 (s-join "|" (mapcar (lambda (it) (regexp-quote it)) r))
+                 (mapconcat (lambda (it) (regexp-quote it)) r "|")
                  "))"))
 
         ;; Lenient version (Use any Japanese characters as word boundary):
@@ -102,7 +95,9 @@ element) of a target term.")
                  "|(?<=[^\x20-\x7e\xff61-\xff9f])"
                  "%1$s"
                  "(?=[^\x20-\x7e\xff61-\xff9f]))")))
-   word-boundary-re-strict))
+   `((strict . ,word-boundary-re-strict)
+     (lenient . ,word-boundary-re-lenient)
+     (default . "|(\\b%1$s\\b)"))))
 
 (provide 'org-roam-cjk-ja)
 ;;; org-roam-cjk-ja.el ends here

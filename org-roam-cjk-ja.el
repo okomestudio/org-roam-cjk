@@ -69,32 +69,32 @@ element) of a target term.")
         ;; boundary. In this stricter version, we use "joshi" particles (助詞)
         ;; as boundary indicator. This implicitly assumes titles (words to be
         ;; delimited by the word boundary) to be "meishi" (名詞/noun).
-        (l (append (cadr org-roam-cjk-ja-joshi)
-                   (car org-roam-cjk-ja-joshi)
-                   org-roam-cjk-ja-misc
-                   (string-split (nth 0 org-roam-cjk-ja-zenkaku-parens) "" t)
-                   (string-split (nth 1 org-roam-cjk-ja-zenkaku-parens) "" t)
-                   (string-split org-roam-cjk-ja-zenkaku-puncts "" t)))
-        (r (append (cadr org-roam-cjk-ja-joshi)
-                   (string-split (nth 1 org-roam-cjk-ja-zenkaku-parens) "" t)
-                   (string-split (nth 0 org-roam-cjk-ja-zenkaku-parens) "" t)
-                   (string-split org-roam-cjk-ja-zenkaku-puncts "" t)))
+        (l (mapconcat
+            (lambda (it) (regexp-quote it))
+            (append (cadr org-roam-cjk-ja-joshi)
+                    (car org-roam-cjk-ja-joshi)
+                    org-roam-cjk-ja-misc
+                    (string-split (nth 0 org-roam-cjk-ja-zenkaku-parens) "" t)
+                    (string-split (nth 1 org-roam-cjk-ja-zenkaku-parens) "" t)
+                    (string-split org-roam-cjk-ja-zenkaku-puncts "" t))
+            "|"))
+        (r (mapconcat
+            (lambda (it) (regexp-quote it))
+            (append (cadr org-roam-cjk-ja-joshi)
+                    (string-split (nth 1 org-roam-cjk-ja-zenkaku-parens) "" t)
+                    (string-split (nth 0 org-roam-cjk-ja-zenkaku-parens) "" t)
+                    (string-split org-roam-cjk-ja-zenkaku-puncts "" t))
+            "|"))
 
         (word-boundary-re-strict
          (concat "|(\\b%1$s\\b"
-                 "|(?<="
-                 (mapconcat (lambda (it) (regexp-quote it)) l "|")
-                 ")%1$s(?="
-                 (mapconcat (lambda (it) (regexp-quote it)) r "|")
-                 "))"))
+                 "|(\\b|(?<=" l "))%1$s((?=" r ")|\\b))"))
 
         ;; Lenient version (Use any Japanese characters as word boundary):
+        (j "[^\x20-\x7e\xff61-\xff9f]")
         (word-boundary-re-lenient
          (concat "|(\\b%1$s\\b"
-                 "|(\\b%1$s\\b"
-                 "|(?<=[^\x20-\x7e\xff61-\xff9f])"
-                 "%1$s"
-                 "(?=[^\x20-\x7e\xff61-\xff9f]))")))
+                 "|(\\b|(?<=" j "))%1$s((?=" j ")|\\b))")))
    `((strict . ,word-boundary-re-strict)
      (lenient . ,word-boundary-re-lenient)
      (default . "|(\\b%1$s\\b)"))))
